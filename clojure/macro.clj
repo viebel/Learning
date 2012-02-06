@@ -46,14 +46,13 @@
 
 (println "*******************")
 (defmacro create-analyzer [stopwords-file-name stemmed language]
-   (let [filter-prefix-map {:French :Snowball} 
-         Analyzer* (symbol (str language "Analyzer."))
-         Filter* (symbol (str (language filter-prefix-map) "Filter."))
+   (let [filter-prefix-map {:French 'Snowball :English 'Standard } 
+         Analyzer* (symbol (str (name language) "Analyzer."))
+         Filter* (symbol (str (language filter-prefix-map (name language)) "Filter."))
          stemmer-map {:French '(FrenchStemmer.)}
          Stemmer* (language stemmer-map "")
          ]
   `(let [stopwords (load-stopwords stopwords-file-name)]
-    ~Analyzer*
     (if stemmed
       (proxy [Analyzer] []
         (tokenStream [field-name reader]
@@ -65,4 +64,5 @@
 
 (println (macroexpand '(create-analyzer :sfn true :French)))
 (println (macroexpand '(create-analyzer :sfn true :English)))
+(println (macroexpand '(create-analyzer :sfn true :German)))
 
