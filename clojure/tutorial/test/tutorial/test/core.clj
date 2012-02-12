@@ -4,5 +4,5 @@
 
 (deftest first-test
   (is (= 5 (+ 2 3)))
-  (is (= 5 (+ 2 4)))
+  (is (= 6 (+ 2 4)))
   )

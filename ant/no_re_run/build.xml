@@ -1,0 +1,9 @@
+<project>
+   <target name="xmllint">
+        <apply executable="xmllint">
+            <srcfile/>
+            <fileset dir="." includes="*.xml"/>
+        </apply>
+    </target>
+
+</project>
