@@ -11,8 +11,8 @@
            (apply str (interpose sep coll)) 
            sep))
 (defn content-to-xml [content]
-        (if (seq? content)
-          (interpose-envelop-and-stringify (map to-xml content) "\n")
+        (if (coll? content)
+          (interpose-envelop-and-stringify (map to-xml (seq content)) "\n")
           (simple-value-to-xml content )))
 
 (defn xml-tag-open [tag-keyword attributes]
@@ -25,11 +25,11 @@
       ((complement nil?) (re-matches #"^-.*" value)))
 
 (defn tag-and-content-to-xml [tag content]
-      (let [{attributes true children false} (if (seq? content) 
+      (let [{attributes true children false} (if (coll? content) 
                                                (group-by (comp xml-attribute? name first) content)
                                                {false content})]
       (str (xml-tag-open tag attributes)
-           (content-to-xml content) 
+           (content-to-xml children) 
            (xml-tag-close tag))))
 
 (defn to-xml [coll] 
