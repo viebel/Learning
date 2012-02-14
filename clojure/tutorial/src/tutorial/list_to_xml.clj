@@ -19,14 +19,14 @@
 (defn xml-tag-close [tag-keyword]
       (str "</" (name tag-keyword) ">"))
 
+(defn tag-and-content-to-xml [tag content]
+      (str (xml-tag-open tag)
+           (content-to-xml content) 
+           (xml-tag-close tag)))
+
 (defn to-xml [coll] 
       (if (empty? coll) ""
-        (let [tag (first coll)
-                  content (second coll)]
-          (str (xml-tag-open tag)
-               (content-to-xml content) 
-               (xml-tag-close tag))
-          )))
+        (tag-and-content-to-xml (first coll) (second coll))))
 
 (def content-a '(:gg ((:aa "bb"))))
 (def content-b '(:gg ((:aa "aa")(:bb "bb"))))
