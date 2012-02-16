@@ -1,0 +1,1 @@
+(proxy [Object] [] (tokenStream [] true))

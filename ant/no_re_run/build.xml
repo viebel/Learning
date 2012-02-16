@@ -1,8 +1,10 @@
 <project>
-   <target name="xmllint">
-        <apply executable="xmllint">
+   <target name="xmllint-files">
+        <apply executable="xmllint" failonerror="true">
             <srcfile/>
-            <fileset dir="." includes="*.xml"/>
+            <fileset dir="." includes="*.xml">
+                <modified/>
+            </fileset>
         </apply>
     </target>
 
