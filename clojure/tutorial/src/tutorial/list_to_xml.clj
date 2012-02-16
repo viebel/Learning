@@ -1,4 +1,5 @@
-(ns tutorial.list-to-xml)
+(ns tutorial.list-to-xml
+    (:require [clojure.string :as string]))
 
 (defn load-list [filename]
       (read-string (slurp filename)))
@@ -16,7 +17,13 @@
           (simple-value-to-xml content )))
 
 (defn xml-tag-open [tag-keyword attributes]
-      (str "<" (name tag-keyword) ">"))
+      (defn- rename-key[[key value]] 
+             (list (string/replace (name key) #"^-" "") value))
+      (defn- join-me[[key value]]
+             (str key "=" \" value \"))
+      (str "<" (name tag-keyword) (if attributes " " "")
+           (string/join " " (map (comp join-me rename-key) attributes))
+           ">"))
 
 (defn xml-tag-close [tag-keyword]
       (str "</" (name tag-keyword) ">"))
@@ -40,6 +47,6 @@
 (def content-a '(:gg ((:aa "bb"))))
 (def content-b '(:gg ((:aa "aa")(:bb "bb"))))
 (def content-c '(:gg ((:aa "aa")(:bb "bb")(:cc ((:dd "dd")(:ee "ee"))))))
-(println (to-xml content-a))
+;(println (to-xml content-a))
 
 ;(println (to-xml (load-list "list.clj")))
