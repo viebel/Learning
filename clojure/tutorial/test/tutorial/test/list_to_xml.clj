@@ -4,10 +4,10 @@
 
 (deftest test-list-to-xml[]
          (are [a b] (= a (to-xml b))
-              "<gg>bb</gg>" '(:gg "bb")
-              "<gg>\n<aa>bb</aa>\n</gg>" '(:gg ((:aa "bb")))
-              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n</gg>" '(:gg ((:aa "aa")(:bb "bb")))
-              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n<cc>\n<dd>dd</dd>\n<ee>ee</ee>\n</cc>\n</gg>" '(:gg ((:aa "aa")(:bb "bb")(:cc ((:dd "dd")(:ee "ee")))))
+              "<gg>bb</gg>" '(:gg bb)
+              "<gg>\n<aa>bb</aa>\n</gg>" '(:gg ((:aa bb)))
+              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n</gg>" '(:gg ((:aa aa)(:bb bb)))
+              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n<cc>\n<dd>dd</dd>\n<ee>ee</ee>\n</cc>\n</gg>" '(:gg ((:aa aa)(:bb bb)(:cc ((:dd "dd")(:ee "ee")))))
               ))
 
 
