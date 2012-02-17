@@ -11,11 +11,11 @@
 (deftest-several to-xml
               "<gg>bb</gg>" '(:gg bb)
               "<gg>bb</gg>" '(:gg bb)
-              "<gg>\n<aa>bb</aa>\n</gg>" '(:gg ((:aa bb)))
+              "<gg>\n <aa>bb</aa>\n</gg>" '(:gg ((:aa bb)))
               "<gg aa=\"bb\"></gg>" '(:gg ((:-aa bb)))
-              "<gg aa=\"bb\">\n<cc>dd</cc>\n</gg>" '(:gg ((:-aa bb)(:cc dd)))
-              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n</gg>" '(:gg ((:aa aa)(:bb bb)))
-              "<gg>\n<aa>aa</aa>\n<bb>bb</bb>\n<cc>\n<dd>dd</dd>\n<ee>ee</ee>\n</cc>\n</gg>" '(:gg ((:aa aa)(:bb bb)(:cc ((:dd "dd")(:ee "ee")))))
+              "<gg aa=\"bb\">\n <cc>dd</cc>\n</gg>" '(:gg ((:-aa bb)(:cc dd)))
+              "<gg>\n <aa>aa</aa>\n <bb>bb</bb>\n</gg>" '(:gg ((:aa aa)(:bb bb)))
+              "<gg>\n <aa>aa</aa>\n <bb>bb</bb>\n <cc>\n  <dd>dd</dd>\n  <ee>ee</ee>\n </cc>\n</gg>" '(:gg ((:aa aa)(:bb bb)(:cc ((:dd "dd")(:ee "ee")))))
               )
 
 (deftest-several xml-attribute?

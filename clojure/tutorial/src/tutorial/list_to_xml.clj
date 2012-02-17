@@ -4,6 +4,7 @@
 (defn load-list [filename]
       (read-string (slurp filename)))
 
+
 (defn xml-tag-open [tag-keyword attributes]
       (defn- rename-key[[key value]] 
              (list (string/replace (name key) #"^-" "") value))
@@ -25,18 +26,26 @@
                                                {false content})]
       {:attributes attributes :children children}))
 
-(defn to-xml [[tag content]]
-      (let [{:keys [attributes children]} (separate-attributes-and-children content)]
-        (str (xml-tag-open tag attributes)
-             (if (coll? children)
-               (str "\n" (string/join "\n" (map to-xml children)) "\n")
-               children)
-             (xml-tag-close tag))))
+(def identstr " ")
+(defn to-xml
+      ([[tag content] ident-level]
+       (let [{:keys [attributes children]} (separate-attributes-and-children content)
+                    my-ident (apply str (repeat ident-level identstr))
+                    children-ident (apply str (repeat (inc ident-level) identstr))]
+         (str (xml-tag-open tag attributes)
+              (if (coll? children)
+                (str "\n" children-ident (string/join (str "\n" children-ident) (map #(to-xml % (inc ident-level)) children)) "\n" my-ident)
+                children)
+              (xml-tag-close tag))))
+      ([coll] (to-xml coll 0)))
+
 
 (def content-0 '(:gg "bb"))
 (def content-a '(:gg ((:aa "bb"))))
 (def content-b '(:gg ((:aa "aa")(:bb "bb"))))
 (def content-c '(:gg ((:aa "aa")(:bb "bb")(:cc ((:dd "dd")(:ee "ee"))))))
 ;(println (to-xml content-a))
+;(println (to-xml content-b))
+(println (to-xml content-c))
 
 ;(println (to-xml (load-list "list.clj")))
