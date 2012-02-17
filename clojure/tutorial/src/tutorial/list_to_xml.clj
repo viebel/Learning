@@ -26,13 +26,11 @@
       {:attributes attributes :children children}))
 
 (defn to-xml [[tag content]]
-      (defn content-to-xml [content]
-            (if (coll? content)
-              (str "\n" (string/join "\n" (map to-xml content)) "\n")
-              content))
       (let [{:keys [attributes children]} (separate-attributes-and-children content)]
         (str (xml-tag-open tag attributes)
-             (content-to-xml children) 
+             (if (coll? children)
+               (str "\n" (string/join "\n" (map to-xml children)) "\n")
+               children)
              (xml-tag-close tag))))
 
 (def content-0 '(:gg "bb"))
