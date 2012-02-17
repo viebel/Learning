@@ -1,10 +1,6 @@
 (ns tutorial.list-to-xml
     (:require [clojure.string :as string]))
 
-(defn load-list [filename]
-      (read-string (slurp filename)))
-
-
 (defn xml-tag-open [tag-keyword attributes]
       (defn- rename-key[[key value]] 
              (list (string/replace (name key) #"^-" "") value))
@@ -48,4 +44,6 @@
 ;(println (to-xml content-b))
 ;(println (to-xml content-c))
 
+(defn load-list [filename]
+      (read-string (slurp filename)))
 ;(println (to-xml (load-list "list.clj")))
