@@ -5,20 +5,18 @@
       (read-string (slurp filename)))
 
 (declare to-xml)
-(defn simple-value-to-xml [content]
-      content)
 
 (defn content-to-xml [content]
         (if (coll? content)
           (str "\n" (string/join "\n" (map to-xml content)) "\n")
-          (simple-value-to-xml content )))
+          content))
 
 (defn xml-tag-open [tag-keyword attributes]
       (defn- rename-key[[key value]] 
              (list (string/replace (name key) #"^-" "") value))
       (defn- join-me[[key value]]
              (str key "=" \" value \"))
-      (str "<" (name tag-keyword) (if attributes " " "")
+      (str "<" (name tag-keyword) (when attributes " ")
            (string/join " " (map (comp join-me rename-key) attributes))
            ">"))
 
