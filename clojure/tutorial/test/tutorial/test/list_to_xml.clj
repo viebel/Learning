@@ -31,3 +31,9 @@
               "<gg a-aa=\"bb\">" :gg '((:a-aa bb))
               "<gg aa=\"bb\" cc=\"dd\">" :gg '((:-aa bb)(:-cc dd))
               ))
+
+(defn test-ns-hook []
+      (test-xml-attribute?)
+      (test-xml-tag-open)
+      (with-redefs [tutorial.list-to-xml/identstr " "] 
+         (test-to-xml)))

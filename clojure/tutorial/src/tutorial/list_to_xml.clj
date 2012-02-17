@@ -46,6 +46,6 @@
 (def content-c '(:gg ((:aa "aa")(:bb "bb")(:cc ((:dd "dd")(:ee "ee"))))))
 ;(println (to-xml content-a))
 ;(println (to-xml content-b))
-(println (to-xml content-c))
+;(println (to-xml content-c))
 
 ;(println (to-xml (load-list "list.clj")))
