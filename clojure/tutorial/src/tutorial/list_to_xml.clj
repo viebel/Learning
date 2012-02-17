@@ -4,13 +4,6 @@
 (defn load-list [filename]
       (read-string (slurp filename)))
 
-(declare to-xml)
-
-(defn content-to-xml [content]
-        (if (coll? content)
-          (str "\n" (string/join "\n" (map to-xml content)) "\n")
-          content))
-
 (defn xml-tag-open [tag-keyword attributes]
       (defn- rename-key[[key value]] 
              (list (string/replace (name key) #"^-" "") value))
@@ -33,6 +26,10 @@
       {:attributes attributes :children children}))
 
 (defn to-xml [[tag content]]
+      (defn content-to-xml [content]
+            (if (coll? content)
+              (str "\n" (string/join "\n" (map to-xml content)) "\n")
+              content))
       (let [{:keys [attributes children]} (separate-attributes-and-children content)]
         (str (xml-tag-open tag attributes)
              (content-to-xml children) 
