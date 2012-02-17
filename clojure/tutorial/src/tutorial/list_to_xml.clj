@@ -10,7 +10,7 @@
 
 (defn content-to-xml [content]
         (if (coll? content)
-          (string/join "\n" (map to-xml content))
+          (str "\n" (string/join "\n" (map to-xml content)) "\n")
           (simple-value-to-xml content )))
 
 (defn xml-tag-open [tag-keyword attributes]
@@ -32,8 +32,8 @@
       (let [{attributes true children false} (if (coll? content) 
                                                (group-by (comp xml-attribute? name first) content)
                                                {false content})]
-      (str (xml-tag-open tag attributes) "\n"
-           (content-to-xml children) "\n"
+      (str (xml-tag-open tag attributes)
+           (content-to-xml children) 
            (xml-tag-close tag))))
 
 (defn to-xml [coll] 
