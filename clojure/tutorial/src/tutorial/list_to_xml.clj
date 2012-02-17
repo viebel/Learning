@@ -32,15 +32,11 @@
                                                {false content})]
       {:attributes attributes :children children}))
 
-(defn tag-and-content-to-xml [tag content]
+(defn to-xml [[tag content]]
       (let [{:keys [attributes children]} (separate-attributes-and-children content)]
         (str (xml-tag-open tag attributes)
              (content-to-xml children) 
              (xml-tag-close tag))))
-
-(defn to-xml [coll] 
-      (if (empty? coll) ""
-        (tag-and-content-to-xml (first coll) (second coll))))
 
 (def content-0 '(:gg "bb"))
 (def content-a '(:gg ((:aa "bb"))))
