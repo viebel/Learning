@@ -20,12 +20,12 @@
     (let [{attributes true children false} (if (coll? content) 
                                                (group-by (comp xml-attribute? name first) content)
                                                {false content})]
-      {:attributes attributes :children children}))
+      [attributes children]))
 
 (def identstr " ")
 (defn to-xml
       ([[tag content] ident-level]
-       (let [{:keys [attributes children]} (separate-attributes-and-children content)
+       (let [[attributes children] (separate-attributes-and-children content)
                     my-ident (apply str "\n" (repeat ident-level identstr))
                     children-ident (apply str "\n" (repeat (inc ident-level) identstr))]
          (str (xml-tag-open tag attributes)
@@ -34,7 +34,6 @@
                 children)
               (xml-tag-close tag))))
       ([coll] (to-xml coll 0)))
-
 
 (def content-0 '(:gg "bb"))
 (def content-a '(:gg ((:aa "bb"))))
