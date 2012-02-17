@@ -30,11 +30,11 @@
 (defn to-xml
       ([[tag content] ident-level]
        (let [{:keys [attributes children]} (separate-attributes-and-children content)
-                    my-ident (apply str (repeat ident-level identstr))
-                    children-ident (apply str (repeat (inc ident-level) identstr))]
+                    my-ident (apply str "\n" (repeat ident-level identstr))
+                    children-ident (apply str "\n" (repeat (inc ident-level) identstr))]
          (str (xml-tag-open tag attributes)
               (if (coll? children)
-                (str "\n" children-ident (string/join (str "\n" children-ident) (map #(to-xml % (inc ident-level)) children)) "\n" my-ident)
+                (str children-ident (string/join children-ident (map #(to-xml % (inc ident-level)) children)) my-ident)
                 children)
               (xml-tag-close tag))))
       ([coll] (to-xml coll 0)))
