@@ -7,13 +7,10 @@
 (declare to-xml)
 (defn simple-value-to-xml [content]
       content)
-(defn interpose-envelop-and-stringify [coll sep]
-      (str sep 
-           (apply str (interpose sep coll)) 
-           sep))
+
 (defn content-to-xml [content]
         (if (coll? content)
-          (interpose-envelop-and-stringify (map to-xml (seq content)) "\n")
+          (str "\n" (string/join "\n" (map to-xml content)) "\n")
           (simple-value-to-xml content )))
 
 (defn xml-tag-open [tag-keyword attributes]
