@@ -26,13 +26,17 @@
 (defn xml-attribute? [value]
       ((complement nil?) (re-matches #"^-.*" value)))
 
-(defn tag-and-content-to-xml [tag content]
-      (let [{attributes true children false} (if (coll? content) 
+(defn separate-attributes-and-children [content]
+    (let [{attributes true children false} (if (coll? content) 
                                                (group-by (comp xml-attribute? name first) content)
                                                {false content})]
-      (str (xml-tag-open tag attributes)
-           (content-to-xml children) 
-           (xml-tag-close tag))))
+      {:attributes attributes :children children}))
+
+(defn tag-and-content-to-xml [tag content]
+      (let [{:keys [attributes children]} (separate-attributes-and-children content)]
+        (str (xml-tag-open tag attributes)
+             (content-to-xml children) 
+             (xml-tag-close tag))))
 
 (defn to-xml [coll] 
       (if (empty? coll) ""
