@@ -1,14 +1,15 @@
 (ns tutorial.test.list-to-xml
   (:use [tutorial.list-to-xml])
-  (:use [clojure.test]))
+  (:use [clojure.test])
+  (:require [clojure.string :as string]))
 
-(defmacro deftest-several [testname tested-func & args]
-  (let [testname (symbol (str "test-" tested-func))]
+(defmacro deftest-several [testname & args]
+  (let [tested-func (symbol (string/replace testname #"^test-" ""))]
     `(deftest ~testname [] 
               (are [a b] (= a (~tested-func b))
                    ~@args))))
 
-(deftest-several test-to-xml to-xml
+(deftest-several test-to-xml 
               "<gg>bb</gg>" '(:gg bb)
               "<gg>bb</gg>" '(:gg bb)
               "<gg>\n <aa>bb</aa>\n</gg>" '(:gg ((:aa bb)))
@@ -18,7 +19,7 @@
               "<gg>\n <aa>aa</aa>\n <bb>bb</bb>\n <cc>\n  <dd>dd</dd>\n  <ee>ee</ee>\n </cc>\n</gg>" '(:gg ((:aa aa)(:bb bb)(:cc ((:dd "dd")(:ee "ee")))))
               )
 
-(deftest-several test-xml-attribute? xml-attribute?
+(deftest-several test-xml-attribute? 
               false "aaa"
               true "-aa"
               false "a-a"
