@@ -3,14 +3,8 @@
     (:use clojure.java.io)
     (:require [clojure.string :as string]))
 
-(def targets (ref {}))
-
-(defmacro deftarget [name & body]
-  (let [name (str name)] 
-  `(dosync (ref-set targets (assoc @targets ~name (fn[] ~@body))))))
-
 (defn run-target [target]
-  ((@targets target)))
+      ((-> target symbol resolve)))
 
 (defn shexec[executable files]
       (defn print-output[output]
@@ -31,7 +25,7 @@
       ([regexp-filter dir] 
        (filter (partial re-matches regexp-filter) (fileset dir))))
 
-(deftarget mobile
+(defn mobile[]
       (shexec "xmllint" 
               (fileset #".*\.xml$" "bb")))
 
