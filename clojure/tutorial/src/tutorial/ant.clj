@@ -15,17 +15,16 @@
 (defn shexec[executable files]
       (defn print-output[output]
             (println (string/join "\n" (reverse output))))
-      (loop [files files output []]
-            (if (empty? files) 
+      (println executable ":")
+      (loop [files files output '() errorcode 0]
+            (if (or (empty? files) (not= 0 errorcode))
               (do (print-output output)
-               0)
+               errorcode)
               (let [file (first files) 
                          res (sh executable file)
-                         errorcode (:exit res)]
-                (if (= 0 errorcode)
-                  (recur (rest files) (cons (str file ": OK") output))
-                  (do (print-output (cons (str file ": FAILED " (:err res)) output))
-                   errorcode))))))
+                         errorcode (:exit res)
+                         msg (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res)))]
+                  (recur (rest files) (cons (str file ": " msg) output) errorcode)))))
 
 
 (defn filenames-of-dir 
@@ -41,7 +40,7 @@
       (let [res (run-target target)]
         (if (= 0 res)
           (println "BUILD SUCESSFUL")
-          (println "BUILD FAILED"))))
+          (println "BUILD FAILED")))
+      (shutdown-agents))
 
-(run-target "mobile")
-(shutdown-agents)
+(-main "mobile")
