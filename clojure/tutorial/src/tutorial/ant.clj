@@ -23,8 +23,9 @@
               (let [file (first files) 
                          res (sh executable file)
                          errorcode (:exit res)
-                         msg (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res)))]
-                  (recur (rest files) (cons (str file ": " msg) output) errorcode)))))
+                         msg (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res)))
+                         output-for-file (cons (str file ": " msg) output)]
+                  (recur (rest files)  output-for-file errorcode)))))
 
 
 (defn filenames-of-dir 
@@ -33,7 +34,7 @@
        (filter (partial re-matches regexp-filter) (filenames-of-dir dir))))
 
 (deftarget mobile
-      (shexec "xmllint" (filenames-of-dir #".*\.xml$" "aa")))
+      (shexec "xmllint" (filenames-of-dir #".*\.xml$" "bb")))
 
 
 (defn -main [target & args]
