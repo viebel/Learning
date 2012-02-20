@@ -26,15 +26,14 @@
                          msg (str file ": " (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res))))]
                   (recur (rest files) (cons msg output) errorcode)))))
 
-
-(defn filenames-of-dir 
+(defn fileset 
       ([dir] (map as-relative-path (file-seq (file dir))))
       ([regexp-filter dir] 
-       (filter (partial re-matches regexp-filter) (filenames-of-dir dir))))
+       (filter (partial re-matches regexp-filter) (fileset dir))))
 
 (deftarget mobile
-      (shexec "xmllint" (filenames-of-dir #".*\.xml$" "bb")))
-
+      (shexec "xmllint" 
+              (fileset #".*\.xml$" "bb")))
 
 (defn -main [target & args]
       (let [res (run-target target)]
