@@ -23,9 +23,8 @@
               (let [file (first files) 
                          res (sh executable file)
                          errorcode (:exit res)
-                         msg (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res)))
-                         output-for-file (cons (str file ": " msg) output)]
-                  (recur (rest files)  output-for-file errorcode)))))
+                         msg (str file ": " (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res))))]
+                  (recur (rest files) (cons msg output) errorcode)))))
 
 
 (defn filenames-of-dir 
