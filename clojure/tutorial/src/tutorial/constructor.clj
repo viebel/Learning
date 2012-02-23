@@ -41,9 +41,13 @@
 (defn getConstructor [klass class-array]
       (first (find-best-constructors klass class-array)))
 
-(defn construct [klass & args]
+(defn old-construct [klass & args]
       (.newInstance
         (getConstructor klass (into-array java.lang.Class (map type args)))
         (object-array args)))
+
+(defn construct [klass & args]
+      (clojure.lang.Reflector/invokeConstructor klass (into-array Object args)))
+        
 
 
