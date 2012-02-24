@@ -24,9 +24,8 @@
     (let [target (str filename ".touch")]
       (if (newer? target filename)
           [0 ""]
-        (let [res (exec-and-touch executable filename (str filename ".touch"))
-                  errorcode (:exit res)]
-          [errorcode (str filename ": " (if (= 0 errorcode) "OK" (str "FAILED\n" (:err res))))]))))
+        (let [{:keys [exit err]} (exec-and-touch executable filename (str filename ".touch"))]
+          [exit (str filename ": " (if (= 0 exit) "OK" (str "FAILED\n" err)))]))))
   
   (println executable ":")
   (loop [files files output [] errorcode 0]
@@ -39,7 +38,9 @@
 
 (defn mobile[]
   (shexec "xmllint"
-          (fs/glob "xml-ok/*.xml")))
+          (fs/glob "xml-ok/*.xml"))
+  (shexec "xmllint"
+          (fs/glob "xml-bad/*.xml")))
 
 (defn -main [target & args]
   (let [res (run-target target)]
