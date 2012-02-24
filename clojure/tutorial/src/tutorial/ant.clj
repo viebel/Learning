@@ -20,7 +20,7 @@
     (println (string/join "\n" output)))
   (defn exec[executable filename]
     (defn newer? [a b] 
-          (apply > (map #(-> % file .lastModified) [a b])))
+          (apply > (map fs/mtime [a b])))
     (let [target (str filename ".touch")]
       (if (newer? target filename)
           [0 ""]
