@@ -25,7 +25,7 @@
         (when (= 0 (:exit res)) (fs/touch target))
         res))
 
-(defn shexec[executable files]
+(defn shexec[executable & opts]
   (defn print-output[output]
     (println (string/join "\n" output)))
   (defn exec[executable filename]
@@ -37,20 +37,22 @@
         (let [{:keys [exit err]} (exec-and-touch executable filename (str filename ".touch"))]
           [exit (str filename ": " (if (= 0 exit) "OK" (str "FAILED\n" err)))]))))
   
-  (println executable ":")
-  (loop [files files output [] errorcode 0]
+  (println (str executable ":"))
+  (let [opts (apply hash-map opts)
+        {:keys [includes]} opts]
+  (loop [files (fs/glob includes) output [] errorcode 0]
     (if (or (empty? files) (not= 0 errorcode))
         (do (print-output output)
             (= 0 errorcode))
       (let [filename (first files)
                  [errorcode msg] (exec executable filename)]
-        (recur (rest files) (conj output msg) (= 0 errorcode))))))
+        (recur (rest files) (conj output msg) (= 0 errorcode)))))))
 
 (deftarget mobile
   (shexec "xmllint"
-          (fs/glob "xml-ok/*.xml"))
+          :includes "xml-ok/*.xml")
   (shexec "xmllint"
-          (fs/glob "xml-bad/*.xml")))
+          :includes "xml-bad/*.xml"))
 
 (defn -main [target & args]
   (if-let [res (get-target target)]
