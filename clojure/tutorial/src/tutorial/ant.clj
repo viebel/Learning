@@ -8,7 +8,17 @@
 (defmacro dbg[x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 
 (defn run-target [target]
-  ((-> (str "tutorial.ant/" target) symbol resolve)))
+      (when-let [t (:target (meta target))]
+                (t)))
+
+(defn get-target[target]
+      (when-let [res (->> target (str "tutorial.ant/") symbol resolve)]
+              (var-get res)))
+
+
+(defmacro deftarget[name & body]
+  `(def ~(vary-meta name assoc :target `(fn[] (and ~@body)))
+    (fn[] (run-target (var ~name)))))
 
 (defn exec-and-touch[executable src target]
       (let [res (sh executable src)]
@@ -31,22 +41,21 @@
   (loop [files files output [] errorcode 0]
     (if (or (empty? files) (not= 0 errorcode))
         (do (print-output output)
-            errorcode)
+            (= 0 errorcode))
       (let [filename (first files)
                  [errorcode msg] (exec executable filename)]
-        (recur (rest files) (conj output msg) errorcode)))))
+        (recur (rest files) (conj output msg) (= 0 errorcode))))))
 
-(defn mobile[]
+(deftarget mobile
   (shexec "xmllint"
           (fs/glob "xml-ok/*.xml"))
   (shexec "xmllint"
           (fs/glob "xml-bad/*.xml")))
 
 (defn -main [target & args]
-  (let [res (run-target target)]
-    (if (= 0 res)
-        (println "BUILD SUCESSFUL")
-      (println (str "BUILD FAILED: " res))))
-  (shutdown-agents))
-
-;(-main "mobile")
+  (if-let [res (get-target target)]
+          (do (if (= 0 (res))
+                  (println "BUILD SUCESSFUL")
+                (println "BUILD FAILED"))
+              (shutdown-agents))
+          (println "TARGET NOT FOUND: " target)))
