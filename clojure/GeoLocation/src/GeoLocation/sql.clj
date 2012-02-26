@@ -14,12 +14,11 @@
  (println @(-> (table db :Click21_2_12)(take 5) (select (where (like :userAgent "%iPhone%")))(project [:ip :userAgent]))))
 
     (defn ip-and-useragent-mobile [tablename]
-     @(-> (table db tablename)
-         (take 1000) 
-         (select (where (or (like :useragent "%Android%" )
-                         (like :useragent "%iPad%")
-                         (like :userAgent "%iPhone%"))))
-         (project [:ip :userAgent])))
+          @(-> (table db tablename)
+               (select (where (or (like :useragent "%Android%" )
+                                  (like :useragent "%iPad%")
+                                  (like :userAgent "%iPhone%"))))
+               (project [:ip :userAgent])))
 
 
 

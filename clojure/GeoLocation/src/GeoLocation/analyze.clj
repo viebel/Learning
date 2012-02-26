@@ -32,7 +32,7 @@
       (defn ratio [{:keys [wifi cellular]}]
             (if (every? number? [wifi cellular])
               (float (/ wifi (+ wifi cellular))) 0))
-      (let [isp-and-device (for [{:keys [ip useragent]} (ip-and-useragent-mobile :Impression22_2_12)] 
+      (let [isp-and-device (for [{:keys [ip useragent]} (ip-and-useragent-mobile :Impression25_2_12)] 
                                 {(get-device useragent) [(wifi-or-3g? ip)]})] 
         (modify-vals (comp ratio frequencies) (aggregate-by-key isp-and-device))))
 
