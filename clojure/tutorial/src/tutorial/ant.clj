@@ -51,17 +51,21 @@
                (line-seq (reader srcfile)))))
   
 (defn concat-files [& opts]
-  (println "concat:" opts)
-  (try (let [{:keys [srcfile destfile]} (apply hash-map opts)
+  (println "concat:")
+  (try (let [{:keys [srcfile destfile header footer]} (apply hash-map opts)
                     files (read-file-list srcfile)
-                    content (apply str (map slurp files))]
+                    content (apply str header (conj (vec (map slurp files)) footer))]
          (spit destfile content) true)
        (catch Exception e (println e))))
 
 (deftarget mobile
   (shexec "xmllint"
           (fs/glob "xml-ok/*.xml"))
-  (concat-files :srcfile "list.txt" :destfile "all_in_one.js"))
+  (concat-files :srcfile "list.txt" :destfile "all_in_one.js"
+                :header (string/join "\n" ["//This is a generated file"
+                                           "//Be careful"
+                                           "\n"])
+                :footer "//End of generated file\n"))
 
 (defn -main [target & args]
   (if-let [res (get-target target)]
