@@ -1,4 +1,3 @@
-(def apache-root "/var/www/")
 (def apache-lib (str apache-root "javascript/lib/"))
 
 (deftarget mobile
