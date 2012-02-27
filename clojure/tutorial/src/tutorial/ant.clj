@@ -54,9 +54,8 @@
 (defn concat-files [& opts]
   (println "concat:")
   (let [{:keys [srcfile destfile header footer]} (apply hash-map opts)
-               files (read-file-list srcfile)
-               content (apply str header (conj (vec (map slurp files)) footer))]
-    (spit destfile content) true))
+               content (string/join (map slurp (read-file-list srcfile)))]
+    (spit destfile (str header content footer)) true))
 
 (load-file "build.properties.clj")
 (load-file (str "build.properties." (-> "os.name" System/getProperty .toLowerCase) ".clj"))
