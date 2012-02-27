@@ -66,7 +66,7 @@
 
 (defn run-file-in-ns [file ns]
   (with-ns ns
-           (eval (read-string (slurp file)))))
+           (load-file file)))
 
 (defn -main [target & args]
   (run-file-in-ns "build.clj" 'tutorial.ant)
