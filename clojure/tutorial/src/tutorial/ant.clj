@@ -66,6 +66,7 @@
     (in-ns (-> oldns# str symbol))))
 
 (load-file "build.properties.clj")
+(load-file (str "build.properties." (-> "os.name" System/getProperty .toLowerCase) ".clj"))
 (load-file "build.clj")
 
 (defn -main [target & args]
