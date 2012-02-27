@@ -28,7 +28,7 @@
         (re-matches #".*Android.*" useragent) :Android
         :else :useragent))
 
-(defn get-wifi-stats-per-device [predicate dbtable] 
+(defn get-stats-per-device [predicate dbtable] 
       (defn ratio [m]
             (let [total (reduce + (vals m))]
               (modify-vals #(float (/ % total)) m)))
