@@ -58,16 +58,18 @@
          (spit destfile content) true)
        (catch Exception e (println e))))
 
-(deftarget mobile
-  (shexec "xmllint"
-          (fs/glob "xml-ok/*.xml"))
-  (concat-files :srcfile "list.txt" :destfile "all_in_one.js"
-                :header (string/join "\n" ["//This is a generated file"
-                                           "//Be careful"
-                                           "\n"])
-                :footer "//End of generated file\n"))
+(defmacro with-ns [n & body]
+      `(let [oldns# *ns*]
+         (in-ns ~n)
+         ~@body
+         (in-ns (-> oldns# str symbol))))
+
+(defn load-build-file [name]
+  (with-ns 'tutorial.ant
+           (eval (read-string (slurp name)))))
 
 (defn -main [target & args]
+  (load-build-file "build.clj")
   (if-let [res (get-target target)]
           (do (if (res)
                   (println "BUILD SUCESSFUL")
