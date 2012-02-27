@@ -15,10 +15,11 @@
 
     (defn ip-and-useragent-mobile [tablename]
           @(-> (table db tablename)
-               (select (where (or (like :useragent "%Android%" )
-                                  (like :useragent "%iPad%")
-                                  (like :userAgent "%iPhone%"))))
-               (project [:ip :userAgent])))
+               (select (where (and (= :country "us") 
+                                   (or (like :useragent "%Android%" )
+                                       (like :useragent "%iPad%")
+                                       (like :userAgent "%iPhone%")))))
+                       (project [:ip :userAgent])))
 
 
 
