@@ -1,1 +1,1 @@
-(def apache-root "/var/www2/")
+(def apache-root "/var/www/")

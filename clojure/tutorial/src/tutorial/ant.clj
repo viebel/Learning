@@ -53,26 +53,21 @@
 
 (defn concat-files [& opts]
   (println "concat:")
-  (try (let [{:keys [srcfile destfile header footer]} (apply hash-map opts)
-                    files (read-file-list srcfile)
-                    content (apply str header (conj (vec (map slurp files)) footer))]
-         (spit destfile content) true)
-       (catch Exception e (println e))))
-
-(defmacro with-ns [n & body]
-  `(let [oldns# *ns*]
-    (in-ns ~n)
-    ~@body
-    (in-ns (-> oldns# str symbol))))
+  (let [{:keys [srcfile destfile header footer]} (apply hash-map opts)
+               files (read-file-list srcfile)
+               content (apply str header (conj (vec (map slurp files)) footer))]
+    (spit destfile content) true))
 
 (load-file "build.properties.clj")
 (load-file (str "build.properties." (-> "os.name" System/getProperty .toLowerCase) ".clj"))
 (load-file "build.clj")
 
 (defn -main [target & args]
-  (if-let [res (get-target target)]
-          (do (if (res)
-                  (println "BUILD SUCESSFUL")
-                  (println "BUILD FAILED"))
-              (shutdown-agents))
-          (println "TARGET NOT FOUND: " target)))
+  (try
+   (if-let [res (get-target target)]
+           (do (if (res)
+                   (println "BUILD SUCESSFUL")
+                   (println "BUILD FAILED"))
+               (shutdown-agents))
+           (println "TARGET NOT FOUND: " target))
+   (catch Exception e (println e))))
