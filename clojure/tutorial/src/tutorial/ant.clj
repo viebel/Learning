@@ -6,14 +6,15 @@
 
 
 (defmacro dbg[x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
+(def my-ns *ns*)
 
 (defn run-target [target]
       (when-let [t (:target (meta target))]
                 (t)))
 
 (defn get-target[target]
-      (when-let [res (->> target (str "tutorial.ant/") symbol resolve)]
-              (var-get res)))
+      (when-let [t (ns-resolve my-ns (symbol target))]
+              (var-get t)))
 
 (defmacro deftarget[name & body]
   `(def ~(vary-meta name assoc :target `(fn[] (and ~@body)))
