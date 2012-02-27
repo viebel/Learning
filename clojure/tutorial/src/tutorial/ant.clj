@@ -45,14 +45,18 @@
                  [errorcode msg] (exec executable filename)]
         (recur (rest files) (conj output msg) errorcode)))))
 
+(defn read-file-list [srcfile]
+  (remove (partial = "")
+          (map #(string/replace % #"\s+$" "")
+               (line-seq (reader srcfile)))))
+  
 (defn concat-files [& opts]
-      (println "concat:" opts)
-      (let [{:keys [srcfile destfile]} (apply hash-map opts)
-                   files (line-seq (reader srcfile))
-                   content (apply str (map slurp files))]
-        (spit destfile content) 0 ))
-
-
+  (println "concat:" opts)
+  (try (let [{:keys [srcfile destfile]} (apply hash-map opts)
+                    files (read-file-list srcfile)
+                    content (apply str (map slurp files))]
+         (spit destfile content) true)
+       (catch Exception e (println e))))
 
 (deftarget mobile
   (shexec "xmllint"
@@ -61,7 +65,7 @@
 
 (defn -main [target & args]
   (if-let [res (get-target target)]
-          (do (if (= 0 (res))
+          (do (if (res)
                   (println "BUILD SUCESSFUL")
                 (println "BUILD FAILED"))
               (shutdown-agents))
