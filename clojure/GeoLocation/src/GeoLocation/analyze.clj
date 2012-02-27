@@ -28,14 +28,14 @@
         (re-matches #".*Android.*" useragent) :Android
         :else :useragent))
 
-(defn get-wifi-stats-per-device [filename] 
-      (defn ratio [{:keys [wifi cellular]}]
-            (if (every? number? [wifi cellular])
-              (float (/ wifi (+ wifi cellular))) 0))
-      (let [isp-and-device (for [{:keys [ip useragent]} (ip-and-useragent-mobile :Impression25_2_12)] 
+(defn get-wifi-stats-per-device [dbtable] 
+      (defn ratio [m]
+            (let [total (reduce + (vals m))]
+              (modify-vals #(float (/ % total)) m)))
+      (let [isp-and-device (for [{:keys [ip useragent]} (ip-and-useragent-mobile dbtable)] 
                                 {(get-device useragent) [(wifi-or-3g? ip)]})] 
         (modify-vals (comp ratio frequencies) (aggregate-by-key isp-and-device))))
 
 (defn -main[& args]
-    (println (time (get-wifi-stats-per-device "ips.txt"))))
-
+    #_(println (time (get-netspeed-per-device "ips.txt")))
+    (println (time (get-wifi-stats-per-device :Click26_2_12))))
