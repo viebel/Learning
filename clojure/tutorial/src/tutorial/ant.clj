@@ -43,13 +43,21 @@
             (= 0 errorcode))
       (let [filename (first files)
                  [errorcode msg] (exec executable filename)]
-        (recur (rest files) (conj output msg) (= 0 errorcode))))))
+        (recur (rest files) (conj output msg) errorcode)))))
+
+(defn concat-files [& opts]
+      (println "concat:" opts)
+      (let [{:keys [srcfile destfile]} (apply hash-map opts)
+                   files (line-seq (reader srcfile))
+                   content (apply str (map slurp files))]
+        (spit destfile content) 0 ))
+
+
 
 (deftarget mobile
   (shexec "xmllint"
           (fs/glob "xml-ok/*.xml"))
-  (shexec "xmllint"
-          (fs/glob "xml-bad/*.xml")))
+  (concat-files :srcfile "list.txt" :destfile "all_in_one.js"))
 
 (defn -main [target & args]
   (if-let [res (get-target target)]
