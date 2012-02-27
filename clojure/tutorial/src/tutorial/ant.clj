@@ -47,11 +47,12 @@
           (recur (rest files) (conj output msg) errorcode)))))
 
 (defn read-file-list [srcfile]
+  (defn remove-trailing-spaces[s] (string/replace s #"\s+$" ""))
   (->> srcfile
        reader
        line-seq
-       (map #(string/replace % #"\s+$" ""))
-       (remove (partial = ""))))
+       (map remove-trailing-spaces)
+       (remove empty?)))
 
 (defn concat-files [& opts]
   (println "concat:")
