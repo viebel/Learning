@@ -47,9 +47,11 @@
           (recur (rest files) (conj output msg) errorcode)))))
 
 (defn read-file-list [srcfile]
-  (remove (partial = "")
-          (map #(string/replace % #"\s+$" "")
-               (line-seq (reader srcfile)))))
+  (->> srcfile
+       reader
+       line-seq
+       (map #(string/replace % #"\s+$" ""))
+       (remove (partial = ""))))
 
 (defn concat-files [& opts]
   (println "concat:")
