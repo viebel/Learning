@@ -3,4 +3,4 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [com.mysql.jdbc  "5.1.8"]
                  [clojureql "1.0.3"]
-                 [geoip "0.2-SNAPSHOT"]])
+                 [com.maxmind.geoip "1.2.5"]])
