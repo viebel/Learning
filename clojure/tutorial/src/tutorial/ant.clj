@@ -64,12 +64,12 @@
          ~@body
          (in-ns (-> oldns# str symbol))))
 
-(defn load-build-file [name]
-  (with-ns 'tutorial.ant
-           (eval (read-string (slurp name)))))
+(defn run-file-in-ns [file ns]
+  (with-ns ns
+           (eval (read-string (slurp file)))))
 
 (defn -main [target & args]
-  (load-build-file "build.clj")
+  (run-file-in-ns "build.clj" 'tutorial.ant)
   (if-let [res (get-target target)]
           (do (if (res)
                   (println "BUILD SUCESSFUL")
