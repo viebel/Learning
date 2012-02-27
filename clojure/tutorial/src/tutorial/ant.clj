@@ -15,7 +15,6 @@
       (when-let [res (->> target (str "tutorial.ant/") symbol resolve)]
               (var-get res)))
 
-
 (defmacro deftarget[name & body]
   `(def ~(vary-meta name assoc :target `(fn[] (and ~@body)))
     (fn[] (run-target (var ~name)))))
