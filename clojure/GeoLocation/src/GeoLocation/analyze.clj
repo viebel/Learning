@@ -25,16 +25,16 @@
 (defn netspeed[ip]
     ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip)))
 
-(dbg (netspeed "4.0.0.0"));Dialup
-(dbg (netspeed "3.0.0.0"));corporate
-(dbg (netspeed "12.39.246.64"));Cable/DSL
-(dbg (netspeed "32.21.248.0"));Cellular
-(dbg (get-isp "32.21.248.0"));Cellular
+;(dbg (netspeed "4.0.0.0"));Dialup
+;(dbg (netspeed "3.0.0.0"));corporate
+;(dbg (netspeed "12.39.246.64"));Cable/DSL
+;(dbg (netspeed "32.21.248.0"));Cellular
+;(dbg (get-isp "32.21.248.0"));Cellular
 
-(println (every? (partial = 11) (map netspeed (line-seq (reader "dialup.txt")))))
-(println (every? (partial = 1) (map netspeed (line-seq (reader "corporate.txt")))))
-(println (every? (partial = 18) (map netspeed (line-seq (reader "cable.txt")))))
-(println (string/join "\n" (set (map get-isp (line-seq (reader "cellular.csv"))))))
+;(println (every? (partial = 11) (map netspeed (line-seq (reader "dialup.txt")))))
+;(println (every? (partial = 1) (map netspeed (line-seq (reader "corporate.txt")))))
+;(println (every? (partial = 18) (map netspeed (line-seq (reader "cable.txt")))))
+;(println (string/join "\n" (set (map get-isp (line-seq (reader "cellular.csv"))))))
 
 (defn get-device[useragent]
       (cond 
@@ -43,14 +43,20 @@
         (re-matches #".*Android.*" useragent) :Android
         :else :useragent))
 
-(defn get-stats-per-device [predicate dbtable] 
+(defn get-day-tables [prefix] 
+      (for [i (range 2)]
+        (keyword (str prefix i))))
+
+(defn get-stats-per-device [predicate table_prefix] 
       (defn ratio [m]
             (let [total (reduce + (vals m))]
               (modify-vals #(format "%.2f" (float (/ % total))) m)))
-      (let [isp-and-device (for [{:keys [ip useragent]} (ip-and-useragent-mobile dbtable)] 
+      (let [data (time (reduce into [] (map ip-and-useragent-mobile (get-day-tables table_prefix))))
+            isp-and-device (for [{:keys [ip useragent]} data] 
                                 {(get-device useragent) [(predicate ip)]})] 
+        (println "total entries:" (count data))
         (modify-vals (comp ratio frequencies) (aggregate-by-key isp-and-device))))
 
 (defn -main[& args]
-    #_(println (time (get-stats-per-device netspeed :Click26_2_12)))
+    (println (time (get-stats-per-device netspeed "Click26_2_")))
     #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12))))
