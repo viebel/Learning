@@ -23,8 +23,10 @@
     (if (is-3g-isp (get-isp ip)) :cellular :wifi))
 
 (defn netspeed[ip]
-    ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip)))
-
+    (let [connection-speed ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip))]
+       (if (= :unknown connection-speed) 
+         :cellular 
+         :wifi)))
 ;(dbg (netspeed "4.0.0.0"));Dialup
 ;(dbg (netspeed "3.0.0.0"));corporate
 ;(dbg (netspeed "12.39.246.64"));Cable/DSL
@@ -44,7 +46,7 @@
         :else :useragent))
 
 (defn get-day-tables [prefix] 
-      (for [i (range 2)]
+      (for [i (range 24)]
         (keyword (str prefix i))))
 
 (defn get-stats-per-device [predicate table_prefix] 
@@ -54,9 +56,15 @@
       (let [data (time (reduce into [] (map ip-and-useragent-mobile (get-day-tables table_prefix))))
             isp-and-device (for [{:keys [ip useragent]} data] 
                                 {(get-device useragent) [(predicate ip)]})] 
-        (println "total entries:" (count data))
-        (modify-vals (comp ratio frequencies) (aggregate-by-key isp-and-device))))
+        (println table_prefix " --- total entries:" (count data))
+        (modify-vals frequencies (aggregate-by-key isp-and-device))))
+
+(defn csv[data] 
+      (doseq [[device d] data]
+             (println (string/join "," [(name device) (d :wifi) (d :cellular)]))))
 
 (defn -main[& args]
-    (println (time (get-stats-per-device netspeed "Click26_2_")))
-    #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12))))
+    (let [d (get-stats-per-device netspeed "Click1_3_")]
+      (println d)
+      (csv d)))
+    #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12)))
