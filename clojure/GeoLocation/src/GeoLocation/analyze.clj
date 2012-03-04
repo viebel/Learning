@@ -60,12 +60,14 @@
       (reduce (partial merge-with (partial merge-with +))
               (map one-hour-data (get-day-tables table_prefix))))
 
-(defn csv[data] 
-      (doseq [[device d] data]
-             (println (string/join "," [(name device) (d :wifi) (d :cellular)]))))
+(defn csv[data c1 c2] 
+      (string/join "\n"
+                   (cons (string/join "," (list "" (name c1) (name c2)))
+                         (for [[device d] data]
+                              (string/join "," [(name device) (d c1) (d c2)])))))
 
-(defn -main[& args]
-    (let [d (get-stats-per-device netspeed "Impression3_3_")]
+(defn -main[table_prefix & args]
+    (let [d (get-stats-per-device netspeed table_prefix)]
       (println d)
-      (csv d)))
+      (println (csv d :wifi :cellular))))
     #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12)))
