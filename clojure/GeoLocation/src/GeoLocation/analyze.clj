@@ -50,21 +50,22 @@
         (keyword (str prefix i))))
 
 (defn get-stats-per-device [predicate table_prefix] 
-      (defn ratio [m]
-            (let [total (reduce + (vals m))]
-              (modify-vals #(format "%.2f" (float (/ % total))) m)))
-      (let [data (time (reduce into [] (map ip-and-useragent-mobile (get-day-tables table_prefix))))
-            isp-and-device (for [{:keys [ip useragent]} data] 
-                                {(get-device useragent) [(predicate ip)]})] 
-        (println table_prefix " --- total entries:" (count data))
-        (modify-vals frequencies (aggregate-by-key isp-and-device))))
+      (println "gathering data for:" table_prefix)
+      (defn one-hour-data[table] 
+            (let [data (ip-and-useragent-mobile table)
+                       isp-and-device (for [{:keys [ip useragent]} data] 
+                                           {(get-device useragent) [(predicate ip)]})] 
+              (modify-vals frequencies (aggregate-by-key isp-and-device))))
+
+      (reduce (partial merge-with (partial merge-with +))
+              (map one-hour-data (get-day-tables table_prefix))))
 
 (defn csv[data] 
       (doseq [[device d] data]
              (println (string/join "," [(name device) (d :wifi) (d :cellular)]))))
 
 (defn -main[& args]
-    (let [d (get-stats-per-device netspeed "Click1_3_")]
+    (let [d (get-stats-per-device netspeed "Impression3_3_")]
       (println d)
       (csv d)))
     #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12)))
