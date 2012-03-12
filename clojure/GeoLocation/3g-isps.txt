@@ -7,4 +7,3 @@ MetroPCS Wireless
 BellSouth.net
 Ntelos PCS
 AT&T Services
-SBC Internet Services
