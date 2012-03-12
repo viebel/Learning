@@ -24,14 +24,18 @@
 
 (defn netspeed[ip]
     (let [connection-speed ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip))]
-       (if (= :unknown connection-speed) 
-         :cellular 
-         :wifi)))
+       (case connection-speed 
+             :unknown :cellular
+             nil :unknown
+             :wifi)))
+
 ;(dbg (netspeed "4.0.0.0"));Dialup
 ;(dbg (netspeed "3.0.0.0"));corporate
 ;(dbg (netspeed "12.39.246.64"));Cable/DSL
 ;(dbg (netspeed "32.21.248.0"));Cellular
 ;(dbg (get-isp "32.21.248.0"));Cellular
+(dbg (.getID netspeedService "208.54.32.145'"));Cellular
+(dbg (netspeed "208.54.32.145'"));Cellular
 
 ;(println (every? (partial = 11) (map netspeed (line-seq (reader "dialup.txt")))))
 ;(println (every? (partial = 1) (map netspeed (line-seq (reader "corporate.txt")))))
@@ -66,8 +70,10 @@
                          (for [[device d] data]
                               (string/join "," [(name device) (d c1) (d c2)])))))
 
-(defn -main[table_prefix & args]
-    (let [d (get-stats-per-device netspeed table_prefix)]
-      (println d)
-      (println (csv d :wifi :cellular))))
-    #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12)))
+(defn -main
+      ([] (println "Nothing to run"))
+      ([table_prefix & args]
+       (let [d (get-stats-per-device netspeed table_prefix)]
+         (println d)
+         (println (csv d :wifi :cellular))))
+      #_(println (time (get-stats-per-device wifi-or-3g? :Click26_2_12))))
