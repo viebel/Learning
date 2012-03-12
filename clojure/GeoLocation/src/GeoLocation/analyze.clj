@@ -1,34 +1,13 @@
 (ns GeoLocation.analyze
+    (:use [GeoLocation.Maxmind])
     (:use [clojure.java.io :only (reader)])
     (:use [GeoLocation.sql :exclude [-main]])
-    (:require [clojure.string :as string])
-    (:import (com.maxmind.geoip LookupService)))
+    (:require [clojure.string :as string]))
 
 (defmacro dbg[x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 (defn modify-vals [f m] (zipmap (keys m) (map f (vals m))))
 (defn aggregate-by-key [m] 
       (apply merge-with into m))
-
-(def lookupService (LookupService. "GeoIPISP.dat") )
-(def netspeedService (LookupService. "GeoIPNetSpeedCell.dat") )
-
-(def isps-3g (set (line-seq (reader "3g-isps.txt"))))
-
-(defn get-isp [ip]
-      (.getOrg lookupService ip))
-
-(defn wifi-or-3g?[ip]
-    (defn is-3g-isp[isp] 
-      (contains? isps-3g isp))
-    (if (is-3g-isp (get-isp ip)) :cellular :wifi))
-
-(defn netspeed[ip]
-    (let [connection-speed ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip))]
-       (case connection-speed 
-             :unknown :cellular
-             nil :unknown
-             :wifi)))
-
 ;(dbg (netspeed "4.0.0.0"));Dialup
 ;(dbg (netspeed "3.0.0.0"));corporate
 ;(dbg (netspeed "12.39.246.64"));Cable/DSL

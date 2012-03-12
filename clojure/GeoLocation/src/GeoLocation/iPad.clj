@@ -1,5 +1,5 @@
 (ns GeoLocation.iPad
-    (:use [clojure.java.io :only (reader)])
+    (:use [GeoLocation.Maxmind])
     (:require [clojure.string :as string])
     (:refer-clojure :exclude [distinct conj! case compile drop take sort disj!])
     (:use [clojureql.core])
@@ -11,25 +11,6 @@
 (defn aggregate-by-key [m] 
       (apply merge-with into m))
 
-(def lookupService (LookupService. "GeoIPISP.dat") )
-(def netspeedService (LookupService. "GeoIPNetSpeedCell.dat") )
-
-(def isps-3g (set (line-seq (reader "3g-isps.txt"))))
-
-(defn get-isp [ip]
-      (.getOrg lookupService ip))
-
-
-(defn wifi-or-3g?[ip]
-    (defn is-3g-isp[isp] 
-      (contains? isps-3g isp))
-    (if (is-3g-isp (get-isp ip)) :cellular :wifi))
-
-(defn netspeed[ip]
-    (let [connection-speed ({11 :dialup 1 :corporate 18 :cable/dsl 28 :unknown} (.getID netspeedService ip))]
-       (if (= :unknown connection-speed) 
-         :cellular 
-         :wifi)))
 (defn get-device[useragent]
       (cond 
         (re-matches #".*iPhone.*" useragent) :iPhone
@@ -38,7 +19,7 @@
         :else :useragent))
 
 (defn get-day-tables [prefix] 
-      (for [i (range 24)]
+      (for [i (range 3 10)]
         (keyword (str prefix i))))
 
 
@@ -61,7 +42,7 @@
            (project [:ip :userAgent])))
 
 (defn compare-two-predicates[table_prefix p1 p2 p3]
-      (let [ips (flatten (map (partial ips-for-useragent "iPad") (get-day-tables table_prefix)))]
+      (let [ips (flatten (map (partial ips-for-useragent "Android") (get-day-tables table_prefix)))]
         (for [{:keys [ip]} ips]
              [ip (p1 ip) (p2 ip) (p3 ip)])))
 
