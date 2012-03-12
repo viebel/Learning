@@ -1,4 +1,4 @@
-(ns GeoLocation.iPad
+(ns GeoLocation.Device
     (:use [GeoLocation.Maxmind])
     (:require [clojure.string :as string])
     (:refer-clojure :exclude [distinct conj! case compile drop take sort disj!])
