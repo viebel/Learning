@@ -35,12 +35,12 @@ def emails_detect(line):
     return emails
 
 def normalize_phone(s):
-    s = re.sub('\s*-\s*', '-', s)
-    s = re.sub('\)\s*-?\s*', '-', s)
+    s = re.sub('\s*-\s*', ' ', s)
+    s = re.sub('\)\s*-?\s*', ' ', s)
     return s
 
 def match_phones(line):
-    phone_regexp = '([0-9]{3})[\s-]([0-9]{3})-([0-9]{4})'
+    phone_regexp = '([0-9]{3})\s([0-9]{3})\s([0-9]{4})'
     return re.findall(phone_regexp, normalize_phone(line))
 
 def phones_detect(line):
