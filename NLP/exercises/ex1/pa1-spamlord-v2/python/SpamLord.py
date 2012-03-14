@@ -19,14 +19,17 @@ match the gold answers
 NOTE: ***don't change this interface***, as it will be called directly by
 the submit script
 """
-def rep(s):
-    return re.sub('(?i) DOT ', '.', s)
+def normalize(s):
+    s = re.sub('(?i) DOT ', '.', s)
+    s = re.sub('(?i) AT ', '@', s)
+    s = re.sub('(?i)\s+@\s+', '@', s)
+    return s
 
 def emails_of_pattern_2(line):
     emails = []
-    matches = re.findall('(?i)([\w.%+-]+)[\s]*(?: AT | at |@)[\s]*([\w\s(?: DOT|dot ).-]+\.[a-z]+)', line)
+    matches = re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]+)', normalize(line))
     for m in matches:
-        emails.append(rep('%s@%s' % m))
+        emails.append('%s@%s' % m)
     return emails
 
 def process_file(name, f):
