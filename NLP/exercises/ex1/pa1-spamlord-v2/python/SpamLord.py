@@ -25,7 +25,7 @@ def normalize(s):
     s = re.sub('(?i)\s+@\s+', '@', s)
     return s
 
-def emails_of_pattern_2(line):
+def emails_detect(line):
     emails = []
     matches = re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]{2,})', normalize(line))
     for m in matches:
@@ -37,7 +37,7 @@ def process_file(name, f):
     # sys.stderr.write('[process_file]\tprocessing file: %s\n' % (path))
     res = []
     for line in f:
-        for email in emails_of_pattern_2(line):
+        for email in emails_detect(line):
             res.append((name,'e',email))
     return res
 
