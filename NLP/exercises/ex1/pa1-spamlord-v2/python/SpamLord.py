@@ -27,7 +27,7 @@ def normalize(s):
 
 def emails_of_pattern_2(line):
     emails = []
-    matches = re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]+)', normalize(line))
+    matches = re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]{2,})', normalize(line))
     for m in matches:
         emails.append('%s@%s' % m)
     return emails
