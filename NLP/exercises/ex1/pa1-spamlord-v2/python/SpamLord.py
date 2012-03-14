@@ -3,7 +3,6 @@ import os
 import re
 import pprint
 
-my_first_pat = '(\w+)@(\w+).edu'
 
 """ 
 TODO
@@ -20,14 +19,22 @@ match the gold answers
 NOTE: ***don't change this interface***, as it will be called directly by
 the submit script
 """
+def rep(s):
+    return re.sub('(?i) DOT ', '.', s)
+
+def emails_of_pattern_2(line):
+    emails = []
+    matches = re.findall('(?i)([\w.%+-]+)[\s]*(?: AT | at |@)[\s]*([\w\s(?: DOT|dot ).-]+\.[a-z]+)', line)
+    for m in matches:
+        emails.append(rep('%s@%s' % m))
+    return emails
+
 def process_file(name, f):
     # note that debug info should be printed to stderr
     # sys.stderr.write('[process_file]\tprocessing file: %s\n' % (path))
     res = []
     for line in f:
-        matches = re.findall(my_first_pat,line)
-        for m in matches:
-            email = '%s@%s.edu' % m
+        for email in emails_of_pattern_2(line):
             res.append((name,'e',email))
     return res
 
