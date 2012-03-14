@@ -19,18 +19,34 @@ match the gold answers
 NOTE: ***don't change this interface***, as it will be called directly by
 the submit script
 """
-def normalize(s):
+def normalize_email(s):
     s = re.sub('(?i) DOT ', '.', s)
     s = re.sub('(?i) AT ', '@', s)
     s = re.sub('(?i)\s+@\s+', '@', s)
     return s
 
+def match_emails(line):
+    return re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]{2,})', normalize_email(line))
+
 def emails_detect(line):
     emails = []
-    matches = re.findall('(?i)([\w.%+-]+)@([\w\s.-]+\.[a-z]{2,})', normalize(line))
-    for m in matches:
+    for m in match_emails(line):
         emails.append('%s@%s' % m)
     return emails
+
+def normalize_phone(s):
+    return s
+
+def match_phones(line):
+    phone_regexp = '\(?([0-9]{3})\)?\s*[\s-]([0-9]{3})\s*-([0-9]{4})'
+    return re.findall(phone_regexp, normalize_phone(line))
+
+def phones_detect(line):
+    phones = []
+    for m in match_phones(line):
+        phones.append('%s-%s-%s' % m)
+    return phones
+
 
 def process_file(name, f):
     # note that debug info should be printed to stderr
@@ -39,6 +55,8 @@ def process_file(name, f):
     for line in f:
         for email in emails_detect(line):
             res.append((name,'e',email))
+        for phone in phones_detect(line):
+            res.append((name,'p',phone))
     return res
 
 """
