@@ -16,6 +16,8 @@
 (defn -main
       ([] (println "Nothing to run"))
       ([ip]
-       (dbg (.getID netspeedService ip))
-       (dbg (netspeed ip))))
+       ((juxt #(.getID netspeedService %)
+                  netspeed 
+                  get-isp 
+                  wifi-or-3g?) ip)))
 
