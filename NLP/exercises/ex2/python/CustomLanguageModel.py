@@ -1,20 +1,72 @@
-class CustomLanguageModel:
+import math
 
+def push_to_cyclic_list(n, l,a):
+    length = len(l)
+    if(length < n):
+        l.append(a)
+        return l
+    i = 0
+    while i < length - 1:
+        l[i] = l[i+1]
+        i += 1
+    l[-1] = a
+    return l
+    
+class CustomLanguageModel:
   def __init__(self, corpus):
-    """Initialize your data structures in the constructor."""
-    # TODO your code here
+    self.ngrams = {
+            1: {},
+            2: {},
+            3: {},
+            }
+    self.nwords = 0
     self.train(corpus)
+    print('nwords: ' + str(self.nwords))
+
+  def get_ngram_container(self, ngram):
+    return self.ngrams[len(ngram)]
+
+  def num_of_occurences(self, ngram):
+    return self.get_ngram_container(ngram).get(str(ngram)) or 0
 
   def train(self, corpus):
-    """ Takes a corpus and trains your language model. 
-        Compute any counts or other corpus statistics in this function.
-    """  
-    # TODO your code here
-    pass
+    def inc(item):
+        dic = self.get_ngram_container(item)
+        c = dic.get(str(item)) or 0
+        dic[str(item)] = c + 1
+        return c + 1
+
+    for sentence in corpus.corpus: 
+      unigram = []
+      bigram = []
+      trigram = []
+      for datum in sentence.data: 
+        self.nwords += 1
+        push_to_cyclic_list(1, unigram, datum.word)
+        inc(unigram)
+        push_to_cyclic_list(2, bigram, datum.word)
+        if(len(bigram) == 2):
+            inc(bigram)
+        push_to_cyclic_list(3, trigram, datum.word)
+        if(len(trigram) == 3):
+            inc(trigram)
+
+  def ngram_score_raw(self, ngram):
+      ngram_count = self.num_of_occurences(ngram)
+      if len(ngram) == 1:
+          return float(ngram_count + 1)/self.nwords
+      if ngram_count != 0:
+          return float(ngram_count)/self.num_of_occurences(ngram[:-1])
+      return 0.4*self.ngram_score_raw(ngram[1:])
+
+  def ngram_score(self, ngram):
+      return math.log(self.ngram_score_raw(ngram))
 
   def score(self, sentence):
-    """ Takes a list of strings as argument and returns the log-probability of the 
-        sentence using your language model. Use whatever data you computed in train() here.
-    """
-    # TODO your code here
-    return 0.0
+    score = 0.0
+    trigram = []
+    for token in sentence:
+      push_to_cyclic_list(3, trigram, token)
+      s = self.ngram_score(trigram)
+      score += s
+    return score
