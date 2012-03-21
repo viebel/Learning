@@ -14,11 +14,8 @@ def push_to_cyclic_list(n, l,a):
     
 class CustomLanguageModel:
   def __init__(self, corpus):
-    self.ngrams = {
-            1: {},
-            2: {},
-            3: {},
-            }
+    self.ngram_depth = 3
+    self.ngrams = { i+1 : {} for i in range(self.ngram_depth)}
     self.nwords = 0
     self.train(corpus)
     print('nwords: ' + str(self.nwords))
@@ -37,19 +34,16 @@ class CustomLanguageModel:
         return c + 1
 
     for sentence in corpus.corpus: 
-      unigram = []
-      bigram = []
-      trigram = []
-      for datum in sentence.data: 
-        self.nwords += 1
-        push_to_cyclic_list(1, unigram, datum.word)
-        inc(unigram)
-        push_to_cyclic_list(2, bigram, datum.word)
-        if(len(bigram) == 2):
-            inc(bigram)
-        push_to_cyclic_list(3, trigram, datum.word)
-        if(len(trigram) == 3):
-            inc(trigram)
+        ngrams = [[] for i in range(self.ngram_depth)]
+        for datum in sentence.data: 
+            self.nwords += 1
+            i = 0
+            while i < len(ngrams):
+              ngram = ngrams[i]
+              push_to_cyclic_list(i+1, ngram, datum.word)
+              if(len(ngram) == i+1):
+                inc(ngram)
+              i += 1
 
   def ngram_score_raw(self, ngram):
       ngram_count = self.num_of_occurences(ngram)
@@ -64,9 +58,9 @@ class CustomLanguageModel:
 
   def score(self, sentence):
     score = 0.0
-    trigram = []
+    ngram = []
     for token in sentence:
-      push_to_cyclic_list(3, trigram, token)
-      s = self.ngram_score(trigram)
+      push_to_cyclic_list(self.ngram_depth, ngram, token)
+      s = self.ngram_score(ngram)
       score += s
     return score
