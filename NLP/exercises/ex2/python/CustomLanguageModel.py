@@ -11,6 +11,17 @@ def push_to_cyclic_list(n, l,a):
         i += 1
     l[-1] = a
     return l
+def histogram(values_with_count):
+    hist = {}
+    def inc(item):
+        c = hist.get(item) or 0
+        c += 1
+        hist[item] = c
+
+    for item in values_with_count:
+        c = values_with_count[item]
+        inc(c)
+    return hist
     
 class CustomLanguageModel:
   def __init__(self, corpus):
@@ -18,7 +29,10 @@ class CustomLanguageModel:
     self.ngrams = { i+1 : {} for i in range(self.ngram_depth)}
     self.nwords = 0
     self.train(corpus)
-    print('nwords: ' + str(self.nwords))
+    hist = histogram(self.ngrams[1])
+    self.unk_probability = float(hist[1])/self.nwords
+    self.unk_probability = 0.5/self.nwords
+    print('nwords: ' + str(self.nwords) + ' unk_probability: ' + str(self.unk_probability))
 
   def get_ngram_container(self, ngram):
     return self.ngrams[len(ngram)]
@@ -48,7 +62,9 @@ class CustomLanguageModel:
   def ngram_score_raw(self, ngram):
       ngram_count = self.num_of_occurences(ngram)
       if len(ngram) == 1:
-          return float(ngram_count + 1)/self.nwords
+          if ngram_count:
+              return float(ngram_count)/self.nwords
+          return self.unk_probability
       if ngram_count != 0:
           return float(ngram_count)/self.num_of_occurences(ngram[:-1])
       return 0.4*self.ngram_score_raw(ngram[1:])
