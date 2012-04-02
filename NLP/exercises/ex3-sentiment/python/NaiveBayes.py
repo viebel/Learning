@@ -16,6 +16,20 @@ import sys
 import getopt
 import os
 import math
+import string
+
+class LambdaDict(dict):
+    def __init__(self, l):
+        super(LambdaDict, self).__init__()
+        self.l = l
+
+    def __getitem__(self, key):
+        if key in self:
+            return self.get(key)
+        else:
+            self.__setitem__(key, self.l(key))
+            return self.get(key)
+
 
 class NaiveBayes:
   class TrainSplit:
@@ -33,39 +47,52 @@ class NaiveBayes:
       self.klass = ''
       self.words = []
 
-
   def __init__(self):
     """NaiveBayes initialization"""
     self.FILTER_STOP_WORDS = False
     self.stopList = set(self.readFile('../data/english.stop'))
     self.numFolds = 10
 
-  #############################################################################
-  # TODO TODO TODO TODO TODO 
-  
+  def prior_prob_log(self, klass):
+      return math.log(float(self.ndocs_by_klass[klass])/self.global_values['ndocs'])
+
+  def word_likelihood_log(self, klass, word):
+      return math.log(float(self.freqs_by_klass[klass][word] + 1)/self.nwords_by_klass[klass] + len(self.unique_words))
+
+  def likelihood_log(self, klass, words):
+      return reduce(lambda a,b: a+b, map(lambda w: self.word_likelihood_log(klass,w), words), 0)
+
+  def klass_likelihood(self, klass, words):
+      return self.prior_prob_log(klass) + self.likelihood_log(klass, words)
+
   def classify(self, words):
-    """ TODO
-      'words' is a list of words to classify. Return 'pos' or 'neg' classification.
-    """
-    return 'pos'
+      print 'classify: ' + string.join(words)
+      if self.klass_likelihood('pos', words) > self.klass_likelihood('neg', words):
+          return 'pos'
+      return 'neg'
   
+  def init_data_structures(self):
+      if hasattr(self,'global_values'):
+          return
+      self.global_values = LambdaDict(lambda key:0)
+      self.nwords_by_klass = LambdaDict(lambda key:0)
+      self.ndocs_by_klass = LambdaDict(lambda key:0)
+      self.freqs_by_klass = LambdaDict(lambda key: LambdaDict(lambda key: 0))
+      self.unique_words = set()
+
+  def addWord(self, klass, word):
+      self.unique_words.add(word)
+      self.nwords_by_klass[klass] += 1
+      self.freqs_by_klass[klass][word] += 1
 
   def addExample(self, klass, words):
-    """
-     * TODO
-     * Train your model on an example document with label klass ('pos' or 'neg') and
-     * words, a list of strings.
-     * You should store whatever data structures you use for your classifier 
-     * in the NaiveBayes class.
-     * Returns nothing
-    """
-    pass
-      
+      print string.join(words)
+      self.init_data_structures()
+      self.global_values['ndocs'] += 1
+      self.ndocs_by_klass[klass] += 1
+      for word in words:
+          self.addWord(klass, word)
 
-  # TODO TODO TODO TODO TODO 
-  #############################################################################
-  
-  
   def readFile(self, fileName):
     """
      * Code for reading a file.  you probably don't want to modify anything here, 
