@@ -17,6 +17,7 @@ import getopt
 import os
 import math
 import string
+import re
 
 class LambdaDict(dict):
     def __init__(self, l):
@@ -57,7 +58,7 @@ class NaiveBayes:
       return math.log(float(self.ndocs_by_klass[klass])/self.global_values['ndocs'])
 
   def word_likelihood_log(self, klass, word):
-      return math.log(float(self.freqs_by_klass[klass][word] + 1)/self.nwords_by_klass[klass] + len(self.unique_words))
+      return math.log(float(self.freqs_by_klass[klass][word] + 1)/(self.nwords_by_klass[klass] + len(self.unique_words)))
 
   def likelihood_log(self, klass, words):
       return reduce(lambda a,b: a+b, map(lambda w: self.word_likelihood_log(klass,w), words), 0)
@@ -66,11 +67,34 @@ class NaiveBayes:
       return self.prior_prob_log(klass) + self.likelihood_log(klass, words)
 
   def classify(self, words):
-      print 'classify: ' + string.join(words)
+      words = self.preprocess(words)
+      #print 'classify: ' + string.join(words)
+      #print [self.klass_likelihood('pos', words) , self.klass_likelihood('neg', words)]
       if self.klass_likelihood('pos', words) > self.klass_likelihood('neg', words):
           return 'pos'
       return 'neg'
   
+  def preprocess(self, words):
+      def negativize(w):
+          def is_a_negation(t):
+              return re.match('^not$|(.*n\'t$)|cannot',t)
+          def is_a_punctuation(t):
+              return re.match('[\?.!,:]',t)
+          res = []
+          negation = False
+          for t in w:
+              if is_a_negation(t):
+                  negation = True
+              elif is_a_punctuation(t):
+                  negation = False
+              elif negation:
+                      t = 'NOT_' + t
+              res.append(t)
+          return res
+
+      words = negativize(words)
+      return words
+
   def init_data_structures(self):
       if hasattr(self,'global_values'):
           return
@@ -86,11 +110,10 @@ class NaiveBayes:
       self.freqs_by_klass[klass][word] += 1
 
   def addExample(self, klass, words):
-      print string.join(words)
       self.init_data_structures()
       self.global_values['ndocs'] += 1
       self.ndocs_by_klass[klass] += 1
-      for word in words:
+      for word in self.preprocess(words):
           self.addWord(klass, word)
 
   def readFile(self, fileName):
