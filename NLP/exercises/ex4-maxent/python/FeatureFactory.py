@@ -1,4 +1,5 @@
 import json, sys
+import re
 import base64
 from Datum import Datum
 
@@ -23,10 +24,26 @@ class FeatureFactory:
         features = []
         currentWord = words[position]
 
-        """ Baseline Features """
         features.append("word=" + currentWord)
-        features.append("prevLabel=" + previousLabel)
-        features.append("word=" + currentWord + ", prevLabel=" + previousLabel)
+        #features.append("prevLabel=" + previousLabel)
+        #features.append("word=" + currentWord + ", prevLabel=" + previousLabel)
+        if currentWord[0].isupper:
+            features.append("startsWithUpperCase")
+        if position > 0:
+            previousWord = words[position-1]
+            features.append("prevWord=" + previousWord)
+            #features.append("word=" + currentWord + ", prevWord=" + previousWord)
+            if re.match('[\?.!,:]',previousWord):
+                features.append("prevWordType=Punctuation")
+            #if re.match('^(a|this|the|those|my|your|their)$',previousWord):
+             #   features.append("prevWordType=article")
+        else:
+            features.append("prevWordType=Punctuation")
+        if position < len(words)-1:
+            nextWord = words[position + 1]
+            features.append('nextWord=' + nextWord)
+
+
 	"""
         Warning: If you encounter "line search failure" error when
         running the program, considering putting the baseline features
