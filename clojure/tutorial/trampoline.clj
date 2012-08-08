@@ -23,3 +23,17 @@
 
 
 
+
+
+(defn funb [n m]
+  (letfn [(funa [n m]
+          (if (= n 0)
+            m
+            #(funb (dec n) (inc m))))]
+    (if (= n 0)
+      m
+      #(funa (dec n) (inc m)))))
+
+(println "trampoline funb")
+(println (trampoline funb 5 0))
+      

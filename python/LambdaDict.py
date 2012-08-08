@@ -1,7 +1,7 @@
 class LambdaDict(dict):
-    def __init__(self, l):                                                                                          
-        super(LambdaDict, self).__init__()
-        self.l = l
+    def __init__(self, l):
+      super(LambdaDict, self).__init__()
+      self.l = l
  
     def __getitem__(self, key):
         if key in self:
