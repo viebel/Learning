@@ -3,19 +3,20 @@ def c(b):
   def getme():
     return b
   def setme(x):
+    nonlocal b
     b = x
   return {'get': getme, 'set': setme}
 
 a = c(8)
-print a
+print (a)
 a['set'](9)
-print a['get']()
+print (a['get']())
 
-print '***********\n'
+print ('***********\n')
 def a(b):
   return (lambda f:b)
 
-print a(9)(5)
+print (a(9)(5))
 
 def out(sep):
   return lambda  *x:sys.stdout.write(sep.join(map(str,x)) + "\n")
