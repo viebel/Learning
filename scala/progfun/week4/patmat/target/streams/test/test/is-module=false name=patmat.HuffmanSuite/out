@@ -1,0 +1,21 @@
+[0m[[0minfo[0m] [0m[32mHuffmanSuite:[0m[0m
+[0m[[0minfo[0m] [0m[32m- weight of a larger tree[0m[0m
+[0m[[0minfo[0m] [0m[32m- chars of a larger tree[0m[0m
+[0m[[0minfo[0m] [0m[32m- string2chars("hello, world")[0m[0m
+[0m[[0minfo[0m] [0m[32m- times("hha")[0m[0m
+[0m[[0minfo[0m] [0m[32m- times("hhahah")[0m[0m
+[0m[[0minfo[0m] [0m[32m- makeOrderedLeafList for some frequency table[0m[0m
+[0m[[0minfo[0m] [0m[32m- singleton[0m[0m
+[0m[[0minfo[0m] [0m[31m- combine of some leaf list *** FAILED ***[0m[0m
+[0m[[0minfo[0m] [0m[31m  java.lang.Error: an implementation is missing[0m[0m
+[0m[[0minfo[0m] [0m[31m  at common.package$.$qmark$qmark$qmark(package.scala:5)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at patmat.Huffman$.combine(Huffman.scala:122)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at patmat.HuffmanSuite$$anonfun$8.apply$mcV$sp(HuffmanSuite.scala:53)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at patmat.HuffmanSuite$$anonfun$8.apply(HuffmanSuite.scala:51)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at patmat.HuffmanSuite$$anonfun$8.apply(HuffmanSuite.scala:51)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.FunSuite$$anon$1.apply(FunSuite.scala:1265)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.Suite$class.withFixture(Suite.scala:1974)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at patmat.HuffmanSuite.withFixture(HuffmanSuite.scala:11)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.FunSuite$class.invokeWithFixture$1(FunSuite.scala:1262)[0m[0m
+[0m[[0minfo[0m] [0m[31m  at org.scalatest.FunSuite$$anonfun$runTest$1.apply(FunSuite.scala:1271)[0m[0m
+[0m[[0minfo[0m] [0m[31m  ...[0m[0m
