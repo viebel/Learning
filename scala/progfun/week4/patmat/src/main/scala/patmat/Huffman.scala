@@ -1,6 +1,8 @@
 package patmat
 
 import common._
+import scala.annotation.tailrec
+
 
 /**
  * Assignment 4: Huffman coding
@@ -101,7 +103,7 @@ object Huffman {
       (c, occurences + 1) :: xs.filterNot(tuple => tuple._1 == c)
       }
 
-    def acc(chars: List[Char], res: List[(Char,Int)]): List[(Char, Int)] = 
+    @tailrec def acc(chars: List[Char], res: List[(Char,Int)]): List[(Char, Int)] = 
       if (chars.nonEmpty) 
         acc(chars.tail, add(res, chars.head))
       else res
@@ -138,7 +140,7 @@ object Huffman {
     if (trees.length < 2) trees
     else {
       def insert[T](xs: List[T], element: T, comparator: (T, T) => Boolean) = {
-        def acc(ys: List[T], res: List[T]): List[T] = {
+        @tailrec def acc(ys: List[T], res: List[T]): List[T] = {
           if (ys.isEmpty) res ::: List(element)
           else if (comparator(element, ys.head)) res ::: List(element) ::: ys
           else acc(ys.tail, res ::: List(ys.head))
@@ -167,7 +169,7 @@ object Huffman {
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
   def until(stopCondition: (List[CodeTree]) => Boolean,  merge: (List[CodeTree]) => List[CodeTree], trees: List[CodeTree]): CodeTree = {
-    def acc(res: List[CodeTree]) : List[CodeTree] = 
+    @tailrec def acc(res: List[CodeTree]) : List[CodeTree] = 
       if (stopCondition(res)) res
       else acc(merge(res))
 
@@ -201,7 +203,7 @@ object Huffman {
       case Fork(left, right, _, _) => if (bit == 0) left else right
       case Leaf(_, _) => throw new Error("next called with a Leaf")
     }
-    def acc(subtree: CodeTree, rest: List[Bit], res: List[Char]): List[Char] = 
+    @tailrec def acc(subtree: CodeTree, rest: List[Bit], res: List[Char]): List[Char] = 
       if (isLeaf(subtree)) acc(tree, rest, res ::: chars(subtree))
       else if (rest.isEmpty) (if (subtree == tree) res else throw new Error ("bits ended while subtree not at the root")) 
       else acc(next(subtree, rest.head), rest.tail, res)
@@ -270,7 +272,7 @@ object Huffman {
    * sub-trees, think of how to build the code table for the entire tree.
    */
   def convert(tree: CodeTree): CodeTable = {
-    def acc(nodes: List[CodeTree], bits: List[List[Bit]], res: CodeTable): CodeTable = { 
+    @tailrec def acc(nodes: List[CodeTree], bits: List[List[Bit]], res: CodeTable): CodeTable = { 
       if (nodes.isEmpty) res
       else if (isLeaf(nodes.head)) acc(nodes.tail, bits.tail, (chars(nodes.head).head, bits.head) :: res)
       else acc(left(nodes.head) :: right(nodes.head) :: nodes.tail, (bits.head ++ List(0)) :: (bits.head ++ List(1)) :: bits.tail, res)
