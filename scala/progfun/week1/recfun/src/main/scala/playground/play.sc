@@ -6,32 +6,25 @@ object play {
   val (c, d) = (1, "a")                           //> c  : Int = 1
                                                   //| d  : java.lang.String = a
 
-  val k = Tuple2(1, 2)                            //> k  : (Int, Int) = (1,2)
-  def merge[T <: Int](xs: List[T], ys: List[T]): List[T] =
-    (xs, ys) match {
-      case (List(), yy) => yy
-      case (xx, List()) => xx
-      case (x :: xx, y :: yy) => if (x < y) x :: merge(xx, ys) else y :: merge(xs, yy)
-    }                                             //> merge: [T <: Int](xs: List[T], ys: List[T])List[T]
+  List(1, 1, 2, 3).groupBy((x) => x)              //> res0: scala.collection.immutable.Map[Int,List[Int]] = Map(3 -> List(3), 1 -> 
+                                                  //| List(1, 1), 2 -> List(2))
+  List(1, 1, 2, 3).groupBy((x) => x).getOrElse(19, List(9)).head
+                                                  //> res1: Int = 9
+  List('c', 'b', 'A', 'a').groupBy(_.toLower).mapValues(_.length).toList
+                                                  //> res2: List[(Char, Int)] = List((c,1), (a,2), (b,1))
+  List('c', 'b', 'A', 'a').groupBy(_.toLower).get('c').get
+                                                  //> res3: List[Char] = List(c)
+  List('c', 'b', 'A', 'a').groupBy(_.toLower).find(_._1 == 'c')
+                                                  //> res4: Option[(Char, List[Char])] = Some((c,List(c)))
+  def combine[A](xs: Traversable[Traversable[A]]): Seq[Seq[A]] =
+    xs.foldLeft(Seq(Seq.empty[A])) {
+      (x, y) => for (a <- x.view; b <- y) yield a :+ b
+    }                                             //> combine: [A](xs: Traversable[Traversable[A]])Seq[Seq[A]]
 
-  merge(List(1, 4, 5), List(2, 3, 6))             //> res0: List[Int] = List(1, 2, 3, 4, 5, 6)
-  def pack[T](xs: List[T]): List[List[T]] = xs match {
-    case Nil => Nil
-    case x :: xs1 =>
-      val (t, d) = xs span (y => y == x)
-      t :: pack(d)
-  }                                               //> pack: [T](xs: List[T])List[List[T]]
+  combine(Set(Set("a", "b", "c"), Set("1", "2"), Set("S", "T"))).toList
+                                                  //> res5: List[Seq[java.lang.String]] = List(List(a, 1, S), List(a, 1, T), List(
+                                                  //| a, 2, S), List(a, 2, T), List(b, 1, S), List(b, 1, T), List(b, 2, S), List(b
+                                                  //| , 2, T), List(c, 1, S), List(c, 1, T), List(c, 2, S), List(c, 2, T))
 
-  pack(List(1, 1, 2, 2, 3, 4, 4))                 //> res1: List[List[Int]] = List(List(1, 1), List(2, 2), List(3), List(4, 4))
-
-  def reverse[T](xs: List[T]): List[T] =
-    xs.foldLeft(Nil: List[T])((acc, x) => x :: acc)
-                                                  //> reverse: [T](xs: List[T])List[T]
-	reverse(List(1,2,3,4))                    //> res2: List[Int] = List(4, 3, 2, 1)
-	
-	
-	
-	
-	
-	List(1,2,1).toSet                         //> res3: scala.collection.immutable.Set[Int] = Set(1, 2)
+List.range(1,9)                                   //> res6: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8)
 }
