@@ -13,5 +13,6 @@ object play {
   (1 to 10).flatMap (List(_, 2))                  //> res2: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 2, 2, 3, 2, 
                                                   //| 4, 2, 5, 2, 6, 2, 7, 2, 8, 2, 9, 2, 10, 2)
  
+  
   List((1,2),(3,4)).unzip                         //> res3: (List[Int], List[Int]) = (List(1, 3),List(2, 4))
  }
