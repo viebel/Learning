@@ -154,10 +154,18 @@ object Anagrams {
    *  Note: There is only one anagram of an empty sentence.
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
-    def occurrencesAnagrams(occurrences: Occurrences): List[Sentence] = 
-      combinations(occurrences).map(occ => dictionaryByOccurrences.getOrElse(occ, Nil).map(word => 
-          occurrencesAnagrams(subtract(occurrences, occ)).map(anagram => word :: anagram).flatten)).flatten
-
+    def occurrencesAnagrams(occurrences: Occurrences): List[Sentence] = {
+      occurrences match {
+        case Nil => List(Nil)
+        case occ :: tail => 
+          def next(occ: Occurrences) : List[(Word, List[Sentence])] = {
+            lazy val rest: List[Sentence] = occurrencesAnagrams(subtract(occurrences, occ))
+            dictionaryByOccurrences.getOrElse(occ, Nil).map(word => (word, rest))
+          }
+          def res: List[(Word, List[Sentence])] = combinations(occurrences).flatMap(occ => next(occ))
+          res.flatMap(wordAndAnagram => wordAndAnagram._2.map(anagram => wordAndAnagram._1 :: anagram))
+          }
+      }
     occurrencesAnagrams(sentenceOccurrences(sentence))
   }
 
