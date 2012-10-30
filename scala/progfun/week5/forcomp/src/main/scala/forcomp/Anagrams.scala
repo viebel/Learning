@@ -155,18 +155,24 @@ object Anagrams {
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
     def occurrencesAnagrams(occurrences: Occurrences): List[Sentence] = {
-      occurrences match {
-        case Nil => List(Nil)
-        case occ :: tail => 
-          def wordAndAnagrams(occ: Occurrences) : List[(Word, List[Sentence])] = {
-            lazy val rest: List[Sentence] = occurrencesAnagrams(subtract(occurrences, occ))
-            dictionaryByOccurrences.getOrElse(occ, Nil).map(word => (word, rest))
+      @tailrec def acc(data: List[(Sentence, Occurrences)], res: List[Sentence]) : List[Sentence] =
+      data match {
+        case Nil => res
+        case head :: tail => 
+          def sentence = head._1
+          def occurrences = head._2
+          def wordAndAnagrams(occ: Occurrences) : List[(Sentence, Occurrences)] = {
+            lazy val rest: Occurrences = subtract(occurrences, occ)
+            dictionaryByOccurrences.getOrElse(occ, Nil).map(word => (sentence :+ word, rest))
           }
-          def augmentAnagramsWithWord(wordAndAnagrams: (Word, List[Sentence])): List[Sentence] = 
-            wordAndAnagrams._2.map(wordAndAnagrams._1 :: _)
+          def enrich: List[(Sentence, Occurrences)] = 
+            combinations(occurrences).filterNot(_ == Nil).flatMap(wordAndAnagrams(_))
 
-          combinations(occurrences).filterNot(_ == Nil).flatMap(wordAndAnagrams(_)).flatMap(augmentAnagramsWithWord(_))
-          }
+          if(occurrences.isEmpty) acc(tail, sentence :: res)
+          else acc(enrich ++ tail, res)
+      }
+      acc(List((Nil, occurrences)), List())
+      
       }
     occurrencesAnagrams(sentenceOccurrences(sentence))
   }
