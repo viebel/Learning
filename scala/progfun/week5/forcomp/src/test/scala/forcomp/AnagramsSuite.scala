@@ -63,6 +63,11 @@ class AnagramsSuite extends FunSuite {
     assert(combinations(abba).toSet === abbacomb.toSet)
   }
 
+  test("subtract: aa - aa") {
+    val aa = List(('a', 2))
+    assert(subtract(aa, aa) === Nil)
+  }
+
 
 
   test("subtract: lard - r") {
