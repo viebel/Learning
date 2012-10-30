@@ -239,11 +239,11 @@ object Huffman {
   def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     def encodeChar(c: Char): List[Bit] = {
       def calc(subtree: CodeTree, res: List[Bit]): List[Bit] = 
-        if (isLeaf(subtree)) (if (chars(subtree).head == c) res else null)
+        if (isLeaf(subtree)) (if (chars(subtree).head == c) res else Nil)
         else {
           def left_code = calc(left(subtree), res ::: List(0)) 
           def right_code = calc(right(subtree), res ::: List(1)) 
-          if (left_code != null) left_code else right_code
+          if (left_code != Nil) left_code else right_code
         }
       calc(tree, List())
     }
