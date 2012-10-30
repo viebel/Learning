@@ -162,7 +162,7 @@ object Anagrams {
             lazy val rest: List[Sentence] = occurrencesAnagrams(subtract(occurrences, occ))
             dictionaryByOccurrences.getOrElse(occ, Nil).map(word => (word, rest))
           }
-          def res: List[(Word, List[Sentence])] = combinations(occurrences).flatMap(occ => next(occ))
+          def res: List[(Word, List[Sentence])] = combinations(occurrences).filterNot(_ == Nil).flatMap(occ => next(occ))
           res.flatMap(wordAndAnagram => wordAndAnagram._2.map(anagram => wordAndAnagram._1 :: anagram))
           }
       }
