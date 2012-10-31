@@ -95,7 +95,7 @@ object Anagrams {
         (x, y) => for (a <- x.view; b <- y) yield a :+ b
     }
     def all_comb(occurence: (Char, Int)) = 
-      List.range(0, occurence._2 + 1).map ((occurence._1, _))
+      (0 to occurence._2).map ((occurence._1, _))
     cartesian_product(occurrences.map (all_comb(_))).toList.map(_.toList.filterNot(_._2 == 0))
   }
 

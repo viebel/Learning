@@ -159,4 +159,13 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("map (2)") {
+    new TestSets {
+      var a = x => List(1,3,4,5,7,1000).contains(x)
+      var a_doubled = map(a, x => 2 * x)
+      assert(forall(a_doubled, _ % 2 == 0), "all elements in a_doubled are divisible by 2")
+      assert(forall(a_doubled, x => contains(evens, x)), "all elements in a_doubled are evens")
+    }
+  }
+
 }
