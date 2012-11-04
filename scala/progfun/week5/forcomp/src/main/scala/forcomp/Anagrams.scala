@@ -59,12 +59,11 @@ object Anagrams {
    *
    */
   lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = 
-    dictionary groupBy (wordOccurrences(_)) 
+    dictionary groupBy (wordOccurrences(_)) withDefaultValue List()
 
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] = {
-    val wo = wordOccurrences(word)
-    dictionaryByOccurrences.find (_._1 == wo).get._2
+    dictionaryByOccurrences(wordOccurrences(word))
   }
 
   /** Returns the list of all subsets of the occurrence list.
