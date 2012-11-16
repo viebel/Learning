@@ -1,5 +1,6 @@
 
 
+
 object play {
   lazy val inf: Stream[Int] = 1 #:: (inf map (2 * _))
                                                   //> inf  : Stream[Int] = <lazy>
@@ -14,15 +15,18 @@ object play {
     (x =>  false)
   }                                               //> create: => Int => Boolean
  
- moo(4) match {
-  case moo(y) => 8
-  }                                               //> res2: Int = 8
-  
-  moo(8) == moo(9)                                //> res3: Boolean = false
-  moo(8) == moo(8)                                //> res4: Boolean = true
 
+ Set(1) + 1                                       //> res2: scala.collection.immutable.Set[Int] = Set(1)
+ Stream.cons(1, Stream(1,2))                      //> res3: Stream.Cons[Int] = Stream(1, ?)
+ 1 #:: Stream(1,2)                                //> res4: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+  Set(moo(1)) contains moo(1)                     //> res5: Boolean = true
+    Set(boo(moo(1))) contains boo(moo(1))         //> res6: Boolean = true
+ 
+ Stream().isEmpty                                 //> res7: Boolean = true
+ (   Stream(1,2) #::: Stream(3)).apply(2)         //> res8: Int = 3
 }
 
-case class moo(x: Int) {
-}
+
+case class moo(x: Int);
+case class boo(m: moo);
   
